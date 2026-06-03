@@ -1,5 +1,5 @@
 akshare>=1.14.0
 pandas>=2.0.0
 flask>=3.0.0
-mplfinance>=0.12.0
+mplfinance
 requests>=2.31.0
