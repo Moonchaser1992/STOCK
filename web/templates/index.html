@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>选股复盘</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #333; margin-bottom: 20px; }
+        .nav { margin-bottom: 20px; }
+        .nav a { color: #1a73e8; text-decoration: none; margin-right: 20px; }
+        .date-picker { margin-bottom: 20px; }
+        .date-picker select { padding: 8px 16px; font-size: 16px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #fafafa; color: #555; font-weight: 600; }
+        tr:hover { background: #f0f7ff; }
+        .ret-up { color: #e53e3e; }
+        .ret-down { color: #38a169; }
+        .empty { text-align: center; padding: 60px; color: #999; }
+        .summary { margin-bottom: 20px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>选股复盘</h1>
+        <div class="nav">
+            <a href="/">筛选结果</a>
+            <a href="/monthly">月度统计</a>
+        </div>
+
+        <div class="date-picker">
+            <form method="get">
+                <select name="date" onchange="this.form.submit()">
+                    {% for d in dates %}
+                    <option value="{{ d }}" {% if d == selected_date %}selected{% endif %}>{{ d[:4] }}-{{ d[4:6] }}-{{ d[6:8] }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <div class="summary">{{ selected_date[:4] }}-{{ selected_date[4:6] }}-{{ selected_date[6:8] }} | 共 <b>{{ count }}</b> 支入选观察池</div>
+
+        {% if stocks %}
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>代码</th>
+                    <th>名称</th>
+                    <th>当日涨幅</th>
+                    <th>5日涨幅</th>
+                    <th>市值(亿)</th>
+                    <th>排名来源</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in stocks %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ s.code }}</td>
+                    <td>{{ s.name }}</td>
+                    <td class="{% if s.ret_1d and s.ret_1d > 0 %}ret-up{% elif s.ret_1d and s.ret_1d < 0 %}ret-down{% endif %}">
+                        {{ "%+.2f%%"|format(s.ret_1d) if s.ret_1d is not none else '-' }}
+                    </td>
+                    <td>{{ "%+.2f%%"|format(s.ret_5d) if s.ret_5d is not none else '-' }}</td>
+                    <td>{{ "%.0f"|format(s.market_cap_yi) if s.market_cap_yi is not none else '-' }}</td>
+                    <td>{{ s.rank_sources }}</td>
+                    <td><a href="/detail/{{ s.code }}?date={{ selected_date }}">查看</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">当天无筛选结果</div>
+        {% endif %}
+    </div>
+</body>
+</html>

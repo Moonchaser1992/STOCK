@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>月度统计</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #333; margin-bottom: 20px; }
+        .back { margin-bottom: 20px; }
+        .back a { color: #1a73e8; text-decoration: none; }
+        table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #fafafa; color: #555; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back"><a href="/">返回结果列表</a></div>
+        <h1>月度统计</h1>
+        <table>
+            <thead>
+                <tr><th>月份</th><th>有效交易日</th><th>累计入选</th><th>日均入选</th></tr>
+            </thead>
+            <tbody>
+                {% for month, s in stats.items()|sort %}
+                <tr>
+                    <td>{{ month[:4] }}-{{ month[4:6] }}</td>
+                    <td>{{ s.dates }} 天</td>
+                    <td>{{ s.count }} 支</td>
+                    <td>{{ "%.1f"|format(s.count / s.dates) if s.dates > 0 else '-' }} 支</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

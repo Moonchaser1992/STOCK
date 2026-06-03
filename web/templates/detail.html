@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>个股详情</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #333; margin-bottom: 20px; }
+        .back { margin-bottom: 20px; }
+        .back a { color: #1a73e8; text-decoration: none; }
+        .chart-box { background: #fff; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .error { text-align: center; padding: 60px; color: #e53e3e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back"><a href="/">返回结果列表</a></div>
+        <h1>{{ code }} 个股详情</h1>
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% else %}
+        <div class="chart-box">
+            <p>K线数据已加载，近 {{ kline.dates|length }} 个交易日</p>
+            <p>最新收盘价: {{ "%.2f"|format(kline.close[-1]) if kline.close else '-' }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
