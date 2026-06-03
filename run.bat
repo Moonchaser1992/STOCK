@@ -1,13 +1,14 @@
 @echo off
+chcp 65001 >nul
 cd /d "%~dp0"
 echo ========================================
-echo   自动化选股系统
+echo   Stock Screener
 echo ========================================
 echo.
-echo 正在运行，请勿关闭此窗口...
+echo Running... Please do not close this window.
 echo.
 python run.py
 echo.
 echo ========================================
-echo 运行结束（按任意键关闭窗口）
+echo Done. Press any key to close.
 pause > nul
