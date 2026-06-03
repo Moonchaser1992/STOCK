@@ -4,6 +4,11 @@ import sys
 import subprocess
 from datetime import datetime
 
+# Windows 控制台 UTF-8 支持
+if sys.platform == "win32":
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+
 from config import GIT_AUTO_SYNC
 from engine.screener import run_screening
 from notifier.wechat import send_stock_results
@@ -57,4 +62,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n用户中止")
+    except Exception as e:
+        print(f"\n[错误] {e}")
+        import traceback
+        traceback.print_exc()
+        print("\n程序异常退出，请检查错误信息。")
+        if sys.platform == "win32":
+            input("按 Enter 关闭...")
