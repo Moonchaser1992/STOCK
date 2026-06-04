@@ -47,11 +47,8 @@ def check_volume_price_pattern(df: pd.DataFrame, window: int = 12) -> bool:
     first_half = recent.iloc[:half]
     second_half = recent.iloc[half:]
 
-    # 计算前半段和后半段的均价与均量
-    first_avg_price = first_half["close"].mean()
+    # 均量用于对比
     first_avg_vol = first_half["volume"].mean()
-
-    second_avg_price = second_half["close"].mean()
     second_avg_vol = second_half["volume"].mean()
 
     # 前半段价格趋势（简单用：前半段均价 > 前半段起始价）
