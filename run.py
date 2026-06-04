@@ -10,6 +10,7 @@ if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 from config import GIT_AUTO_SYNC
+from engine.sentiment import compute_sentiment
 from engine.screener import run_screening
 from notifier.wechat import send_stock_results
 
@@ -47,8 +48,11 @@ def main():
     if GIT_AUTO_SYNC:
         git_pull()
 
+    # 市场情绪判断
+    sentiment = compute_sentiment()
+
     # 执行筛选
-    results = run_screening(trade_date)
+    results = run_screening(trade_date, sentiment=sentiment)
 
     # 推送微信
     send_stock_results(results, trade_date)
@@ -58,7 +62,10 @@ def main():
         git_push()
 
     print(f"\n✅ 选股完成！共 {len(results)} 支进入观察池")
-    print(f"复盘页面: python app.py")
+    print(f"📊 市场情绪: {sentiment['level']} ({sentiment['score']}分)")
+    if sentiment['score'] < 40:
+        print(f"⚠️  {sentiment['suggestion']}")
+    print(f"💻 复盘页面: python app.py")
 
 
 if __name__ == "__main__":

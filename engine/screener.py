@@ -16,11 +16,12 @@ from engine.conditions import (
 )
 
 
-def run_screening(trade_date: str | None = None) -> list[dict]:
+def run_screening(trade_date: str | None = None, sentiment: dict | None = None) -> list[dict]:
     """
     执行完整选股流程。
     trade_date: 选股基准日期，格式 YYYYMMDD，默认为最近交易日
-    返回: 入选股票列表 [{code, name, reason, ...}, ...]
+    sentiment: 市场情绪指标，由 engine.sentiment.compute_sentiment() 返回
+    返回: 入选股票列表 [{code, name, ...}, ...]
     """
     if trade_date is None:
         trade_date = datetime.now().strftime("%Y%m%d")
@@ -120,18 +121,24 @@ def run_screening(trade_date: str | None = None) -> list[dict]:
     print(f"  第2层过滤后: {len(final_picks)} 支")
 
     # ---- 保存结果 ----
-    save_results(final_picks, trade_date)
+    save_results(final_picks, trade_date, sentiment)
     return final_picks
 
 
-def save_results(results: list[dict], trade_date: str):
+def save_results(results: list[dict], trade_date: str, sentiment: dict | None = None):
     """保存筛选结果到 CSV"""
     os.makedirs(RESULTS_DIR, exist_ok=True)
     filepath = os.path.join(RESULTS_DIR, f"{trade_date}.csv")
     df = pd.DataFrame(results)
     if not df.empty:
         df = df.sort_values("ret_1d", ascending=False, na_position="last")
+        # 附加情绪标记
+        if sentiment:
+            df["sentiment_score"] = sentiment.get("score", "")
+            df["sentiment_level"] = sentiment.get("level", "")
     df.to_csv(filepath, index=False, encoding="utf-8-sig")
+    if sentiment:
+        print(f"  情绪: {sentiment.get('level','')} ({sentiment.get('score','')}分)")
     print(f"\n结果已保存: {filepath}")
 
 
